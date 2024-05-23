@@ -1,0 +1,5 @@
+#Comment: Configuration file for the app
+---
+server:
+  host: "localhost"
+  port: "8080"
