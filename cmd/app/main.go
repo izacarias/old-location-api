@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"git.rz.tu-bs.de/i.zacarias/location-api/internal/config"
-	"git.rz.tu-bs.de/i.zacarias/location-api/pkg/zones"
+	"git.rz.tu-bs.de/i.zacarias/location-api/internal/controllers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,54 +21,22 @@ func main() {
 		log.Fatal("Cannot read configuration: ", err)
 	}
 
-	// Create gin router
 	router := gin.Default()
 
-	// Instatiate zones Handler and provide a data store implementation
-	zStore := zones.NewMemStore()
-	zHandler := NewZonesHandler(zStore)
+	// Registering routes
+	apiV1 := router.Group("/v1")
+	apiV2queries := router.Group("/location/v2/queries")
 
-	// Add dummy date to Zones
-	zStore.AddDummyData()
+	apiV1.GET("/", HomePageHandler)
 
-	// Register routes
-	router.GET("/", homePage)
-
-	// routes for Zones
-	router.GET("location/v2/queries/zones", zHandler.ListZones)
+	apiV2queries.GET("/zones", controllers.GetZones)
+	apiV2queries.GET("/zones/:id", controllers.GetZoneById)
 
 	// Run the server
 	router.Run(config.Server.Host + ":" + config.Server.Port)
 }
 
 // handler for root path "/"
-func homePage(c *gin.Context) {
-	c.String(http.StatusOK,
-		"This is the home page",
-	)
+func HomePageHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "This is the homepage"})
 }
-
-type ZonesHandler struct {
-	store zoneStore
-}
-
-func NewZonesHandler(s zoneStore) *ZonesHandler {
-	return &ZonesHandler{
-		store: s,
-	}
-}
-
-type zoneStore interface {
-	List() (map[int]zones.Zone, error)
-}
-
-func (h ZonesHandler) ListZones(c *gin.Context) {
-	r, err := h.store.List()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	}
-
-	c.JSON(http.StatusOK, r)
-}
-
-func (h ZonesHandler) GetZone(c *gin.Context) {}
