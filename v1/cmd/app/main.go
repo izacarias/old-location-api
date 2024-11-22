@@ -9,8 +9,7 @@ import (
 	"git.rz.tu-bs.de/i.zacarias/location-api/internal/controllers"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
-	// swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Main

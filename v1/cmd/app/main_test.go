@@ -21,7 +21,7 @@ func TestHomePageHandler(t *testing.T) {
 	mockResponse := `{"message":"This is the homepage"}`
 
 	r := SetUpRouter()
-	r.GET("/", HomePageHandler)
+	r.GET("/", PingHandler)
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
